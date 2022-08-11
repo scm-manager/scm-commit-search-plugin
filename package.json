@@ -1,0 +1,29 @@
+{
+  "name": "@scm-manager/scm-commit-search-plugin",
+  "private": true,
+  "version": "1.0.0-SNAPSHOT",
+  "license": "MIT",
+  "main": "./src/main/js/index.tsx",
+  "scripts": {
+    "build" : "plugin-scripts build",
+    "watch" : "plugin-scripts watch",
+    "test" : "jest",
+    "postinstall" : "plugin-scripts postinstall"
+  },
+  "devDependencies": {
+    "@scm-manager/ui-plugins" : "2.27.2",
+    "@scm-manager/plugin-scripts": "^1.2.2"
+  },
+  "babel": {
+    "presets": [
+      "@scm-manager/babel-preset"
+    ]
+  },
+  "jest": {
+    "preset": "@scm-manager/jest-preset"
+  },
+  "prettier": "@scm-manager/prettier-config",
+  "eslintConfig": {
+    "extends": "@scm-manager/eslint-config"
+  }
+}

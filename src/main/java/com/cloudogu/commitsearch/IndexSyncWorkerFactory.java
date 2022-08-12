@@ -24,18 +24,21 @@
 
 package com.cloudogu.commitsearch;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
+import sonia.scm.repository.api.RepositoryService;
 
-@Path("v2/sample")
-class SampleResource {
+import javax.inject.Inject;
 
-  @GET
-  @Produces(MediaType.TEXT_PLAIN)
-  public String sample() {
-    return "Sample";
+public class IndexSyncWorkerFactory {
+
+  private final IndexingContextFactory indexingContextFactory;
+
+  @Inject
+  public IndexSyncWorkerFactory(IndexingContextFactory indexingContextFactory) {
+    this.indexingContextFactory = indexingContextFactory;
+  }
+
+  public IndexSyncWorker create(RepositoryService repositoryService, Indexer indexer) {
+    return new IndexSyncWorker(indexingContextFactory.create(repositoryService, indexer));
   }
 
 }

@@ -22,7 +22,39 @@
  * SOFTWARE.
  */
 
-import { binder } from "@scm-manager/ui-extensions";
-import ChangesetHitRenderer from "./ChangesetHitRenderer";
+package com.cloudogu.commitsearch;
 
-binder.bind("search.hit.commit.renderer", ChangesetHitRenderer);
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import sonia.scm.repository.Repository;
+import sonia.scm.repository.RepositoryTestData;
+import sonia.scm.search.Index;
+
+import static java.util.Collections.emptyList;
+import static org.mockito.Mockito.verify;
+
+@ExtendWith(MockitoExtension.class)
+@SuppressWarnings("UnstableApiUsage")
+class IndexerTaskTest {
+
+  private final Repository repository = RepositoryTestData.create42Puzzle();
+  private final UpdatedChangesets changesets = new UpdatedChangesets(emptyList(), emptyList());
+  private final IndexerTask task = new IndexerTask(repository, changesets);
+
+  @Mock
+  private Index<IndexedChangeset> index;
+  @Mock
+  private IndexSyncer syncer;
+
+  @Test
+  void shouldTriggerSyncerToUpdateIndex() {
+    task.setSyncer(syncer);
+
+    task.update(index);
+
+    verify(syncer).ensureIndexIsUpToDate(index, repository, changesets);
+  }
+
+}

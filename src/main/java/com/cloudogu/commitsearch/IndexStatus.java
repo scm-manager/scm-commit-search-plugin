@@ -22,7 +22,35 @@
  * SOFTWARE.
  */
 
-import { binder } from "@scm-manager/ui-extensions";
-import ChangesetHitRenderer from "./ChangesetHitRenderer";
+package com.cloudogu.commitsearch;
 
-binder.bind("search.hit.commit.renderer", ChangesetHitRenderer);
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import sonia.scm.xml.XmlInstantAdapter;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import java.time.Instant;
+
+@Data
+@XmlRootElement
+@NoArgsConstructor
+@AllArgsConstructor
+@XmlAccessorType(XmlAccessType.FIELD)
+public class IndexStatus {
+
+  static final String EMPTY = "__empty";
+
+  private String revision;
+  @XmlJavaTypeAdapter(XmlInstantAdapter.class)
+  private Instant lastUpdate;
+  private int version;
+
+  public boolean isEmpty() {
+    return EMPTY.equals(revision);
+  }
+
+}

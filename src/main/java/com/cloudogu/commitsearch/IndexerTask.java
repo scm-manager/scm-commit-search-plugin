@@ -22,7 +22,40 @@
  * SOFTWARE.
  */
 
-import { binder } from "@scm-manager/ui-extensions";
-import ChangesetHitRenderer from "./ChangesetHitRenderer";
+package com.cloudogu.commitsearch;
 
-binder.bind("search.hit.commit.renderer", ChangesetHitRenderer);
+import com.google.common.annotations.VisibleForTesting;
+import sonia.scm.repository.Repository;
+import sonia.scm.search.Index;
+import sonia.scm.search.SerializableIndexTask;
+
+import javax.inject.Inject;
+
+@SuppressWarnings("UnstableApiUsage")
+public class IndexerTask implements SerializableIndexTask<IndexedChangeset> {
+
+  private final Repository repository;
+  private final UpdatedChangesets changesets;
+
+  private IndexSyncer syncer;
+
+  public IndexerTask(Repository repository, UpdatedChangesets changesets) {
+    this.repository = repository;
+    this.changesets = changesets;
+  }
+
+  @Inject
+  public void setSyncer(IndexSyncer syncer) {
+    this.syncer = syncer;
+  }
+
+  @VisibleForTesting
+  Repository getRepository() {
+    return repository;
+  }
+
+  @Override
+  public void update(Index<IndexedChangeset> index) {
+    syncer.ensureIndexIsUpToDate(index, repository, changesets);
+  }
+}

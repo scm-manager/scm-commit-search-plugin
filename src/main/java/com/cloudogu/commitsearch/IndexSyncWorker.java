@@ -86,15 +86,19 @@ class IndexSyncWorker {
     }
 
 
-    if (changesets.getAddedChangesets().isEmpty() && changesets.getRemovedChangesets().isEmpty()) {
-      LOG.debug("start updating index of repository {} from {} to {}", repository, from, to);
-      indexer.store(repositoryService.getChangesetsCommand().getChangesets());
-    } else {
+    if (shouldOnlyUpdateForProvidedChangesets(changesets)) {
       indexer.delete(changesets.getRemovedChangesets());
       indexer.store(changesets.getAddedChangesets());
+    } else {
+      LOG.debug("start updating index of repository {} from {} to {}", repository, from, to);
+      indexer.store(repositoryService.getChangesetsCommand().getChangesets());
     }
     repositoryService.getChangesetsCommand().getLatestChangeset()
       .ifPresent(latestChangeset -> indexStatusStore.update(repository, latestChangeset.getId()));
+  }
+
+  private static boolean shouldOnlyUpdateForProvidedChangesets(UpdatedChangesets changesets) {
+    return changesets != null && (!changesets.getAddedChangesets().isEmpty() || !changesets.getRemovedChangesets().isEmpty());
   }
 
   void reIndex() {

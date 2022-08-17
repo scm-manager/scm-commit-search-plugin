@@ -23,17 +23,11 @@
  */
 
 import React, { FC } from "react";
-import {
-  Hit,
-  HitProps,
-  Notification,
-  RepositoryAvatar,
-  TextHitField,
-  useStringHitFieldValue
-} from "@scm-manager/ui-components";
+import { Hit, Notification, RepositoryAvatar, TextHitField, useStringHitFieldValue } from "@scm-manager/ui-components";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { extensionPoints } from "@scm-manager/ui-extensions";
 
 const Container = styled(Hit.Content)`
   overflow-x: auto;
@@ -44,7 +38,7 @@ const FileContent = styled.div`
   border-radius: 0.25rem;
 `;
 
-const ChangesetHitRenderer: FC<HitProps> = ({ hit }) => {
+const ChangesetHitRenderer: FC<extensionPoints.SearchHitRenderer["props"]> = ({ hit }) => {
   const commitId = useStringHitFieldValue(hit, "id");
   const [t] = useTranslation("plugins");
 

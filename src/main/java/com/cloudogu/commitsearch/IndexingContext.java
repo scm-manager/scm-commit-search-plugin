@@ -22,10 +22,23 @@
  * SOFTWARE.
  */
 
-describe("frontend unit tests", () => {
+package com.cloudogu.commitsearch;
 
-  it("some test", () => {
-    expect( 21 * 2 ).toBe(42);
-  });
+import lombok.Getter;
+import sonia.scm.repository.api.RepositoryService;
 
-});
+@Getter
+class IndexingContext {
+
+  private final RepositoryService repositoryService;
+  private final IndexStatusStore indexStatusStore;
+  private final Indexer indexer;
+
+  IndexingContext(RepositoryService repositoryService, IndexStatusStore indexStatusStore, Indexer indexer) {
+    this.repositoryService = repositoryService;
+    this.indexStatusStore = indexStatusStore;
+    this.indexer = indexer;
+  }
+
+
+}

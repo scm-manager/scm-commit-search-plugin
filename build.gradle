@@ -33,7 +33,7 @@ dependencies {
 }
 
 scmPlugin {
-  scmVersion = "2.27.2"
+  scmVersion = "2.38.2-SNAPSHOT"
   displayName = "Commit Search"
   description = "Enables search for commits"
 

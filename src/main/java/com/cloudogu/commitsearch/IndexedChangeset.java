@@ -22,7 +22,26 @@
  * SOFTWARE.
  */
 
-import { binder } from "@scm-manager/ui-extensions";
-import ChangesetHitRenderer from "./ChangesetHitRenderer";
+package com.cloudogu.commitsearch;
 
-binder.bind("search.hit.commit.renderer", ChangesetHitRenderer);
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import sonia.scm.search.Indexed;
+import sonia.scm.search.IndexedType;
+
+@AllArgsConstructor
+@Getter
+@IndexedType(value = "commit", repositoryScoped = true, namespaceScoped = true)
+@SuppressWarnings({"UnstableApiUsage", "java:S2160"})
+public class IndexedChangeset {
+  static final int VERSION = 1;
+
+  @Indexed(type = Indexed.Type.SEARCHABLE)
+  private String id;
+  @Indexed(type = Indexed.Type.SEARCHABLE)
+  private String author;
+  @Indexed(type = Indexed.Type.SEARCHABLE)
+  private Long date;
+  @Indexed(type = Indexed.Type.TOKENIZED, defaultQuery = true, highlighted = true)
+  private String description;
+}

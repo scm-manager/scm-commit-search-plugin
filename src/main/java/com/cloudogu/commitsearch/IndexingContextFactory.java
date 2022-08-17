@@ -22,7 +22,23 @@
  * SOFTWARE.
  */
 
-import { binder } from "@scm-manager/ui-extensions";
-import ChangesetHitRenderer from "./ChangesetHitRenderer";
+package com.cloudogu.commitsearch;
 
-binder.bind("search.hit.commit.renderer", ChangesetHitRenderer);
+import sonia.scm.repository.api.RepositoryService;
+
+import javax.inject.Inject;
+
+public class IndexingContextFactory {
+
+  private final IndexStatusStore indexStatusStore;
+
+  @Inject
+  public IndexingContextFactory(IndexStatusStore indexStatusStore) {
+    this.indexStatusStore = indexStatusStore;
+  }
+
+  public IndexingContext create(RepositoryService repositoryService, Indexer indexer) {
+    return new IndexingContext(repositoryService, indexStatusStore, indexer);
+  }
+
+}

@@ -22,7 +22,18 @@
  * SOFTWARE.
  */
 
-import { binder } from "@scm-manager/ui-extensions";
-import ChangesetHitRenderer from "./ChangesetHitRenderer";
+package com.cloudogu.commitsearch;
 
-binder.bind("search.hit.commit.renderer", ChangesetHitRenderer);
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import sonia.scm.repository.Changeset;
+
+import java.io.Serializable;
+import java.util.List;
+
+@AllArgsConstructor
+@Data
+public class UpdatedChangesets implements Serializable {
+  private final List<Changeset> addedChangesets;
+  private final List<Changeset> removedChangesets;
+}

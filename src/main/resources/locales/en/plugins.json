@@ -1,5 +1,31 @@
 {
   "scm-commit-search-plugin": {
-
+    "author": "Author"
+  },
+  "search": {
+    "types": {
+      "commit": {
+        "title": "Commit",
+        "subtitle": "Commit",
+        "navItem": "Commits",
+        "fields": {
+          "id": {
+            "exampleValue": "26c85ada2cccb0aebfcdf48750f4224250040853",
+            "hints": "Commit revision"
+          },
+          "description": {
+            "exampleValue": "Commit Description",
+            "hints": "Explanation text for the commit"
+          },
+          "author": {
+            "exampleValue": "Author",
+            "hints": "Creator of the commit"
+          },
+          "date": {
+            "hints": "Creation date"
+          }
+        }
+      }
+    }
   }
 }

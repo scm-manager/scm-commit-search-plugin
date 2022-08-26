@@ -156,20 +156,6 @@ class IndexSyncWorkerTest {
   }
 
   @Test
-  void shouldUpdateIndexIfNewChangesetsAdded() {
-    when(store.get(repository)).thenReturn(Optional.of(new IndexStatus("41", Instant.now(), IndexedChangeset.VERSION)));
-    Changeset changeset = new Changeset("42", 0L, Person.toPerson("trillian"), "first commit");
-    List<Changeset> changesets = List.of(changeset);
-    when(changesetsCommandBuilder.getLatestChangeset()).thenReturn(Optional.of(changeset));
-    when(changesetsCommandBuilder.getChangesets()).thenReturn(changesets);
-
-    worker.ensureIndexIsUpToDate(updatedChangesets);
-
-    verify(indexer).store(changesets);
-    verify(store).update(repository, "42");
-  }
-
-  @Test
   void shouldClearIndexIfNoChangesetFound() {
     when(store.get(repository)).thenReturn(Optional.of(new IndexStatus("41", Instant.now(), IndexedChangeset.VERSION)));
     Changeset changeset = new Changeset("42", 0L, Person.toPerson("trillian"), "first commit");

@@ -38,7 +38,7 @@ public class IndexedChangeset {
 
   @Indexed(type = Indexed.Type.SEARCHABLE)
   private String id;
-  @Indexed(type = Indexed.Type.SEARCHABLE)
+  @Indexed(type = Indexed.Type.TOKENIZED)
   private String author;
   @Indexed(type = Indexed.Type.SEARCHABLE)
   private Long date;

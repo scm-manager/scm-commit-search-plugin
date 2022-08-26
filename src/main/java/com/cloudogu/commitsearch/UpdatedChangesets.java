@@ -33,7 +33,11 @@ import java.util.List;
 
 @AllArgsConstructor
 @Data
-public class UpdatedChangesets implements Serializable {
+class UpdatedChangesets implements Serializable {
   private final List<Changeset> addedChangesets;
   private final List<Changeset> removedChangesets;
+
+  boolean isEmpty() {
+    return addedChangesets.isEmpty() && removedChangesets.isEmpty();
+  }
 }

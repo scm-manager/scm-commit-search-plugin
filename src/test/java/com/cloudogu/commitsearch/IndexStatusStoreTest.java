@@ -74,7 +74,7 @@ class IndexStatusStoreTest {
     assertThat(indexStatus).isPresent();
     assertThat(indexStatus.get().isEmpty()).isFalse();
     assertThat(indexStatus.get().getRevision()).isEqualTo("42");
-    assertThat(indexStatus.get().getVersion()).isEqualTo(1);
+    assertThat(indexStatus.get().getVersion()).isEqualTo(2);
   }
 
   @Test

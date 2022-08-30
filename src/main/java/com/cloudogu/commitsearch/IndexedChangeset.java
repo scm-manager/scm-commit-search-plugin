@@ -35,7 +35,7 @@ import sonia.scm.search.IndexedType;
 @IndexedType(value = "commit", repositoryScoped = true, namespaceScoped = true)
 @SuppressWarnings({"UnstableApiUsage", "java:S2160"})
 public class IndexedChangeset {
-  static final int VERSION = 1;
+  static final int VERSION = 2;
 
   IndexedChangeset(Changeset changeset) {
     this(

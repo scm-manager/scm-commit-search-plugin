@@ -42,6 +42,7 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
+import static java.util.Collections.emptyList;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.never;
@@ -144,9 +145,9 @@ class IndexSyncWorkerTest {
   void shouldDoNothingIfCurrentIndexIsUpToDate() {
     when(store.get(repository)).thenReturn(Optional.of(new IndexStatus("42", Instant.now(), IndexedChangeset.VERSION)));
     Changeset changeset = new Changeset("42", 0L, Person.toPerson("trillian"), "first commit");
-    List<Changeset> changesets = List.of(changeset);
     when(changesetsCommandBuilder.getLatestChangeset()).thenReturn(Optional.of(changeset));
-    when(changesetsCommandBuilder.getChangesets()).thenReturn(changesets);
+    when(changesetsCommandBuilder.getChangesets()).thenReturn(emptyList());
+    when(updatedChangesets.isEmpty()).thenReturn(true);
 
     worker.ensureIndexIsUpToDate(updatedChangesets);
 

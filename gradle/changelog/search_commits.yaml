@@ -1,2 +1,2 @@
 - type: added
-  description: Enable commit search for hg and svn ([#1](https://github.com/scm-manager/scm-commit-search-plugin/pull/1))
+  description: Enable commit search ([#1](https://github.com/scm-manager/scm-commit-search-plugin/pull/1), [#2](https://github.com/scm-manager/scm-commit-search-plugin/pull/2))

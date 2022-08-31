@@ -23,6 +23,10 @@
           },
           "date": {
             "hints": "Creation date"
+          },
+          "parent": {
+            "exampleValue": "42",
+            "hints": "Parent revisions"
           }
         }
       }

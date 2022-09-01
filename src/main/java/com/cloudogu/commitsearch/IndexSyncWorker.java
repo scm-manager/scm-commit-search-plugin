@@ -98,7 +98,7 @@ class IndexSyncWorker {
   }
 
   private static boolean noChangesDetected(String from, String to, UpdatedChangesets changesets) {
-    return from.equals(to) && changesets.isEmpty();
+    return from.equals(to) && (changesets == null || changesets.isEmpty());
   }
 
   void reIndex() {

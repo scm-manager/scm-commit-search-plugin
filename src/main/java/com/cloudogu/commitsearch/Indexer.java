@@ -54,7 +54,7 @@ class Indexer {
 
     for (Changeset changeset : changesets) {
       LOG.trace("store {} to index", changeset);
-      IndexedChangeset indexedChangeset = new IndexedChangeset(changeset.getId(), changeset.getAuthor().toString(), changeset.getDate(), changeset.getDescription());
+      IndexedChangeset indexedChangeset = new IndexedChangeset(changeset);
       index.store(id(indexedChangeset.getId()), permission(), indexedChangeset);
     }
   }

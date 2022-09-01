@@ -60,8 +60,10 @@ class IndexSyncWorker {
         );
         reIndex();
       } else if (indexStatus.isEmpty()) {
+        LOG.trace("no previous index found for repository {}, trigger reindex", repository);
         reIndex();
       } else {
+        LOG.trace("previous index exists for repository {}, trigger update", repository);
         ensureIndexIsUpToDate(indexStatus.getRevision(), changesets);
       }
     } else {
@@ -73,32 +75,30 @@ class IndexSyncWorker {
   private void ensureIndexIsUpToDate(String revision, UpdatedChangesets changesets) {
     Optional<Changeset> latestChangeset = repositoryService.getChangesetsCommand().getLatestChangeset();
     if (latestChangeset.isPresent()) {
-      ensureIndexIsUpToDate(revision, latestChangeset.get().getId(), changesets);
+      LOG.trace("found latest changeset for repository {} with id {}", repository, latestChangeset.get().getId());
+      ensureIndexIsUpToDate(revision, latestChangeset.get().getId(), changesets, latestChangeset.get());
     } else {
+      LOG.trace("no commits found for repository {}", repository);
       emptyRepository();
     }
   }
 
-  private void ensureIndexIsUpToDate(String from, String to, UpdatedChangesets changesets) {
-    if (from.equals(to)) {
+  private void ensureIndexIsUpToDate(String from, String to, UpdatedChangesets changesets, Changeset latestChangeset) {
+    if (noChangesDetected(from, to, changesets)) {
       LOG.debug("index of repository {} is up to date", repository);
       return;
     }
-
-
-    if (shouldOnlyUpdateForProvidedChangesets(changesets)) {
-      indexer.delete(changesets.getRemovedChangesets());
-      indexer.store(changesets.getAddedChangesets());
-    } else {
-      LOG.debug("start updating index of repository {} from {} to {}", repository, from, to);
-      indexer.store(repositoryService.getChangesetsCommand().getChangesets());
+    if (changesets.isEmpty()) {
+      throw new IllegalArgumentException("A new 'top changeset' without updated changesets is not possible");
     }
-    repositoryService.getChangesetsCommand().getLatestChangeset()
-      .ifPresent(latestChangeset -> indexStatusStore.update(repository, latestChangeset.getId()));
+
+    indexer.delete(changesets.getRemovedChangesets());
+    indexer.store(changesets.getAddedChangesets());
+    indexStatusStore.update(repository, latestChangeset.getId());
   }
 
-  private static boolean shouldOnlyUpdateForProvidedChangesets(UpdatedChangesets changesets) {
-    return changesets != null && (!changesets.getAddedChangesets().isEmpty() || !changesets.getRemovedChangesets().isEmpty());
+  private static boolean noChangesDetected(String from, String to, UpdatedChangesets changesets) {
+    return from.equals(to) && (changesets == null || changesets.isEmpty());
   }
 
   void reIndex() {

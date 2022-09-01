@@ -26,6 +26,7 @@ package com.cloudogu.commitsearch;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import sonia.scm.repository.Changeset;
 import sonia.scm.search.Indexed;
 import sonia.scm.search.IndexedType;
 
@@ -34,14 +35,26 @@ import sonia.scm.search.IndexedType;
 @IndexedType(value = "commit", repositoryScoped = true, namespaceScoped = true)
 @SuppressWarnings({"UnstableApiUsage", "java:S2160"})
 public class IndexedChangeset {
-  static final int VERSION = 1;
+  static final int VERSION = 2;
+
+  IndexedChangeset(Changeset changeset) {
+    this(
+      changeset.getId(),
+      String.valueOf(changeset.getAuthor()),
+      changeset.getDate(),
+      changeset.getDescription(),
+      String.join(", ", changeset.getParents())
+    );
+  }
 
   @Indexed(type = Indexed.Type.SEARCHABLE)
   private String id;
-  @Indexed(type = Indexed.Type.SEARCHABLE)
+  @Indexed(type = Indexed.Type.TOKENIZED)
   private String author;
   @Indexed(type = Indexed.Type.SEARCHABLE)
   private Long date;
   @Indexed(type = Indexed.Type.TOKENIZED, defaultQuery = true, highlighted = true)
   private String description;
+  @Indexed(name = "parent", type = Indexed.Type.TOKENIZED)
+  private String parents;
 }

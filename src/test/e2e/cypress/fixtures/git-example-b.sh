@@ -62,5 +62,5 @@ git commit -m "Pirates drink Grog"
 git remote add origin "$1/repo/$3/$4"
 git push --all origin
 
-# Example B
+# Delete remote feature branch
 git push -d origin feature

@@ -58,7 +58,7 @@ describe("Git Search", () => {
 
     // Then
     cy
-      .contains("div.media-content", `${namespace}/${repoName}`, { timeout: 10000 })
+      .contains("div.media-content", `${namespace}/${repoName}`)
       .should("not.exist");
   });
 });

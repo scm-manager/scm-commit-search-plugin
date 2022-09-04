@@ -26,15 +26,14 @@
 
 import { hri } from "human-readable-ids";
 
-describe("Example", () => {
-    it("should show a footer navigation for authenticated users", () => {
+describe("Git Search", () => {
+    it("should find commits", () => {
         // Given
         const namespace = hri.random();
         const repoName = hri.random();
         cy.restCreateRepo("git", namespace, repoName);
         cy.login("scmadmin", "scmadmin");
-        cy.exec("pwd");
-        cy.exec(`sh cypress/integration/git-example.sh ssh://scmadmin@localhost:2222 /tmp ${namespace} ${repoName}`);
+        cy.exec(`sh cypress/fixtures/git-example.sh ssh://scmadmin@localhost:2222 /tmp ${namespace} ${repoName}`);
 
         // When
         cy.visit(`/search/commit/?q=boulder`);

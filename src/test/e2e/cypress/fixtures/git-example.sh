@@ -1,5 +1,11 @@
 #! /usr/bin/bash
 
+# A---B---C---D  master
+#      \
+#       E        develop
+#        \
+#         F---G  feature
+
 # $1 = SCM-Manager instance url
 # $2 = Output directory
 # $3 = Namespace

@@ -22,26 +22,43 @@
  * SOFTWARE.
  */
 
-// This is an automatically generated example, please remove or replace as you see fit
-
 import { hri } from "human-readable-ids";
 
 describe("Git Search", () => {
-    it("should find commits", () => {
-        // Given
-        const namespace = hri.random();
-        const repoName = hri.random();
-        cy.restCreateRepo("git", namespace, repoName);
-        cy.login("scmadmin", "scmadmin");
-        cy.exec(`sh cypress/fixtures/git-example.sh ssh://scmadmin@localhost:2222 /tmp ${namespace} ${repoName}`);
+  let namespace: string;
+  let repoName: string;
 
-        // When
-        cy.visit(`/search/commit/?q=boulder`);
+  beforeEach(() => {
+    namespace = hri.random();
+    repoName = hri.random();
+    cy.restCreateRepo("git", namespace, repoName);
+    cy.login("scmadmin", "scmadmin");
+  });
 
-        // Then
-        cy
-          .contains("div.media-content", `${namespace}/${repoName}`)
-          .contains("mark", "Boulder")
-          .should("exist");
-    });
+  it("should find commits", () => {
+    // Given
+    cy.exec(`sh cypress/fixtures/git-example.sh ssh://scmadmin@localhost:2222 /tmp ${namespace} ${repoName}`);
+
+    // When
+    cy.visit(`/search/commit/?q=boulder`);
+
+    // Then
+    cy
+      .contains("div.media-content", `${namespace}/${repoName}`)
+      .contains("mark", "Boulder")
+      .should("exist");
+  });
+
+  it("should not find commits of deleted branch", () => {
+    // Given
+    cy.exec(`sh cypress/fixtures/git-example-b.sh ssh://scmadmin@localhost:2222 /tmp ${namespace} ${repoName}`);
+
+    // When
+    cy.visit(`/search/commit/?q=fridolin`);
+
+    // Then
+    cy
+      .contains("div.media-content", `${namespace}/${repoName}`, { timeout: 10000 })
+      .should("not.exist");
+  });
 });

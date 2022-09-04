@@ -37,9 +37,12 @@ describe("Example", () => {
         cy.exec(`sh cypress/integration/git-example.sh ssh://scmadmin@localhost:2222 /tmp ${namespace} ${repoName}`);
 
         // When
-        cy.visit(`/repo/${namespace}/${repoName}/info`);
+        cy.visit(`/search/commit/?q=boulder`);
 
         // Then
-        cy.get(repoName).should("exist");
+        cy
+          .contains("div.media-content", `${namespace}/${repoName}`)
+          .contains("mark", "Boulder")
+          .should("exist");
     });
 });

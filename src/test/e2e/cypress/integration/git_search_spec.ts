@@ -23,6 +23,13 @@
  */
 
 import { hri } from "human-readable-ids";
+import { GitTreeBuilder } from "./_helpers/git-tree-builder";
+
+// A---B---C---D  master
+//      \
+//       E        develop
+//        \
+//         F---G  feature
 
 describe("Git Search", () => {
   let namespace: string;
@@ -37,7 +44,24 @@ describe("Git Search", () => {
 
   it("should find commits", () => {
     // Given
-    cy.exec(`sh cypress/fixtures/git-example.sh ssh://scmadmin@localhost:2222 /tmp ${namespace} ${repoName}`);
+    new GitTreeBuilder(
+      namespace,
+      repoName
+    )
+      .init()
+      .createAndCommitFile("Antelope.txt", "I am an animal", "Release the Antelope")
+      .createAndCommitFile("Boulder.txt", "I am rock solid", "Lift a Boulder")
+      .createAndCheckoutBranch("develop")
+      .checkoutBranch("main")
+      .createAndCommitFile("Catfish.txt", "Am I a cat, am I a fish ? Who knows!", "Actually, a Catfish is a fish")
+      .createAndCommitFile("Dollar.txt", "Which dollar am I, Canadian, US, Australian ?", "A Dollar is what I need")
+      .checkoutBranch("develop")
+      .createAndCommitFile("Elegant.txt", "We even have adjectives!", "An elegant panda is counting to 42")
+      .createAndCheckoutBranch("feature")
+      .createAndCommitFile("Fridolin.txt", "I like this name", "Fridolin likes the SCM-Manager, be more like Fridolin")
+      .createAndCommitFile("Grog.txt", "Yaarrgh! I am a pirate", "Pirates drink Grog")
+      .pushAll()
+    ;
 
     // When
     cy.visit(`/search/commit/?q=boulder`);
@@ -51,7 +75,26 @@ describe("Git Search", () => {
 
   it("should not find commits of deleted branch", () => {
     // Given
-    cy.exec(`sh cypress/fixtures/git-example-b.sh ssh://scmadmin@localhost:2222 /tmp ${namespace} ${repoName}`);
+    new GitTreeBuilder(
+      namespace,
+      repoName
+    )
+      .init()
+      .createAndCommitFile("Antelope.txt", "I am an animal", "Release the Antelope")
+      .createAndCommitFile("Boulder.txt", "I am rock solid", "Lift a Boulder")
+      .createAndCheckoutBranch("develop")
+      .checkoutBranch("main")
+      .createAndCommitFile("Catfish.txt", "Am I a cat, am I a fish ? Who knows!", "Actually, a Catfish is a fish")
+      .createAndCommitFile("Dollar.txt", "Which dollar am I, Canadian, US, Australian ?", "A Dollar is what I need")
+      .checkoutBranch("develop")
+      .createAndCommitFile("Elegant.txt", "We even have adjectives!", "An elegant panda is counting to 42")
+      .createAndCheckoutBranch("feature")
+      .createAndCommitFile("Fridolin.txt", "I like this name", "Fridolin likes the SCM-Manager, be more like Fridolin")
+      .createAndCommitFile("Grog.txt", "Yaarrgh! I am a pirate", "Pirates drink Grog")
+      .pushAll()
+      .checkoutBranch("main")
+      .deleteBranchLocallyAndRemote("feature")
+    ;
 
     // When
     cy.visit(`/search/commit/?q=fridolin`);

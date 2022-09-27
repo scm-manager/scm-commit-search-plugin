@@ -32,6 +32,10 @@ export class GitBuilder {
     return this;
   }
 
+  checkoutDefaultBranch() {
+    return this.checkoutBranch("main");
+  }
+
   deleteBranchLocallyAndRemote(branchName: string) {
     cy.exec(`git -C ${this.gitDirectory} branch -D "${branchName}"`);
     cy.exec(`git -C ${this.gitDirectory} push -d origin "${branchName}"`);
@@ -40,6 +44,11 @@ export class GitBuilder {
 
   pushAll() {
     cy.exec(`git -C ${this.gitDirectory} push --all origin`);
+    return this;
+  }
+
+  rebase(branch: string, onto: string) {
+    cy.exec(`git -C ${this.gitDirectory} rebase ${branch} ${onto}`);
     return this;
   }
 }

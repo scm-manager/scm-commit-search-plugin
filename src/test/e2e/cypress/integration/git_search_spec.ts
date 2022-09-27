@@ -22,8 +22,8 @@
  * SOFTWARE.
  */
 
-import { hri } from "human-readable-ids";
-import { GitBuilder } from "./_helpers/git-builder";
+import {hri} from "human-readable-ids";
+import {GitBuilder} from "./__helpers/git-builder";
 
 // A---B---C---D  master
 //      \
@@ -34,17 +34,15 @@ import { GitBuilder } from "./_helpers/git-builder";
 describe("Git Search", () => {
   let namespace: string;
   let repoName: string;
+  let builder: GitBuilder;
 
   beforeEach(() => {
     namespace = hri.random();
     repoName = hri.random();
     cy.restCreateRepo("git", namespace, repoName);
     cy.login("scmadmin", "scmadmin");
-  });
 
-  it("should find commits", () => {
-    // Given
-    new GitBuilder(
+    builder = new GitBuilder(
       namespace,
       repoName
     )
@@ -52,7 +50,7 @@ describe("Git Search", () => {
       .createAndCommitFile("Antelope.txt", "I am an animal", "Release the Antelope")
       .createAndCommitFile("Boulder.txt", "I am rock solid", "Lift a Boulder")
       .createAndCheckoutBranch("develop")
-      .checkoutBranch("main")
+      .checkoutDefaultBranch()
       .createAndCommitFile("Catfish.txt", "Am I a cat, am I a fish ? Who knows!", "Actually, a Catfish is a fish")
       .createAndCommitFile("Dollar.txt", "Which dollar am I, Canadian, US, Australian ?", "A Dollar is what I need")
       .checkoutBranch("develop")
@@ -61,8 +59,10 @@ describe("Git Search", () => {
       .createAndCommitFile("Fridolin.txt", "I like this name", "Fridolin likes the SCM-Manager, be more like Fridolin")
       .createAndCommitFile("Grog.txt", "Yaarrgh! I am a pirate", "Pirates drink Grog")
       .pushAll()
-    ;
+      .checkoutDefaultBranch();
+  });
 
+  it("should find commits", () => {
     // When
     cy.visit(`/search/commit/?q=boulder`);
 
@@ -75,26 +75,7 @@ describe("Git Search", () => {
 
   it("should not find commits of deleted branch", () => {
     // Given
-    new GitBuilder(
-      namespace,
-      repoName
-    )
-      .init()
-      .createAndCommitFile("Antelope.txt", "I am an animal", "Release the Antelope")
-      .createAndCommitFile("Boulder.txt", "I am rock solid", "Lift a Boulder")
-      .createAndCheckoutBranch("develop")
-      .checkoutBranch("main")
-      .createAndCommitFile("Catfish.txt", "Am I a cat, am I a fish ? Who knows!", "Actually, a Catfish is a fish")
-      .createAndCommitFile("Dollar.txt", "Which dollar am I, Canadian, US, Australian ?", "A Dollar is what I need")
-      .checkoutBranch("develop")
-      .createAndCommitFile("Elegant.txt", "We even have adjectives!", "An elegant panda is counting to 42")
-      .createAndCheckoutBranch("feature")
-      .createAndCommitFile("Fridolin.txt", "I like this name", "Fridolin likes the SCM-Manager, be more like Fridolin")
-      .createAndCommitFile("Grog.txt", "Yaarrgh! I am a pirate", "Pirates drink Grog")
-      .pushAll()
-      .checkoutBranch("main")
-      .deleteBranchLocallyAndRemote("feature")
-    ;
+    builder.deleteBranchLocallyAndRemote("feature");
 
     // When
     cy.visit(`/search/commit/?q=fridolin`);
@@ -103,5 +84,19 @@ describe("Git Search", () => {
     cy
       .contains("div.media-content", `${namespace}/${repoName}`)
       .should("not.exist");
+  });
+
+  it("should find rebased commits", () => {
+    // Given
+    builder.rebase("feature", "main");
+
+    // When
+    cy.visit(`/search/commit/?q=fridolin`);
+
+    // Then
+    cy
+      .contains("div.media-content", `${namespace}/${repoName}`)
+      .contains("mark", "Fridolin")
+      .should("exist");
   });
 });

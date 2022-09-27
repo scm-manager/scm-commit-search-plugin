@@ -23,7 +23,7 @@
  */
 
 import { hri } from "human-readable-ids";
-import { GitTreeBuilder } from "./_helpers/git-tree-builder";
+import { GitBuilder } from "./_helpers/git-builder";
 
 // A---B---C---D  master
 //      \
@@ -44,7 +44,7 @@ describe("Git Search", () => {
 
   it("should find commits", () => {
     // Given
-    new GitTreeBuilder(
+    new GitBuilder(
       namespace,
       repoName
     )
@@ -75,7 +75,7 @@ describe("Git Search", () => {
 
   it("should not find commits of deleted branch", () => {
     // Given
-    new GitTreeBuilder(
+    new GitBuilder(
       namespace,
       repoName
     )

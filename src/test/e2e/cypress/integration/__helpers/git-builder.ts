@@ -1,4 +1,4 @@
-export class GitTreeBuilder {
+export class GitBuilder {
 
   private readonly directory = `cypress/fixtures/${this.namespace}-${this.name}`;
   private readonly gitDirectory = `./${this.directory}`;
@@ -7,8 +7,11 @@ export class GitTreeBuilder {
   }
 
   init() {
+    const [protocol, url] = Cypress.config('baseUrl').split("//");
+    const credentials = `${Cypress.env("USERNAME")}:${Cypress.env("PASSWORD")}`;
+    const urlWithCredentials = `${protocol}//${credentials}@${url}`;
     cy.exec(`git init -b main ./${this.gitDirectory}`);
-    cy.exec(`git -C ${this.gitDirectory} remote add origin "http://scmadmin:scmadmin@localhost:8081/scm/repo/${this.namespace}/${this.name}"`);
+    cy.exec(`git -C ${this.gitDirectory} remote add origin "${urlWithCredentials}/repo/${this.namespace}/${this.name}"`);
     return this;
   }
 

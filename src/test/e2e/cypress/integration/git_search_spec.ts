@@ -198,4 +198,20 @@ describe("Git Search", () => {
     findSearchHit()
       .should("exist");
   });
+
+  it("should find commit after renaming branch", () => {
+    // Given
+    const git = prepareAndPushBaseExample();
+    git
+      .checkoutBranch("feature")
+      .createAndCheckoutBranch("new")
+      .renameBranchLocallyAndRemote("feature", "new");
+
+    // When
+    visitSearch("fridolin");
+
+    // Then
+    findSearchHit()
+      .should("exist");
+  });
 });

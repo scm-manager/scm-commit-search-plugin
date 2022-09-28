@@ -72,4 +72,9 @@ export class GitBuilder {
     cy.exec(`git -C ${this.gitDirectory} tag ${tagName}`);
     return this;
   }
+
+  renameBranchLocallyAndRemote(oldBranchName: string, newBranchName: string) {
+    cy.exec(`git -C ${this.gitDirectory} push origin :${oldBranchName} ${newBranchName}`);
+    return this;
+  }
 }

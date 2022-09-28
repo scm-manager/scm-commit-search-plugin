@@ -33,7 +33,7 @@ describe("Git Search", () => {
     .contains("div.media-content", `${namespace}/${repoName}`);
 
   const findSearchHits = () => cy
-    .get(`.${namespace}-${repoName}`);
+    .get(`.${namespace}\\/${repoName}`);
 
   const findSearchMark = (keyword: string) => cy
     .contains("div.media-content", `${namespace}/${repoName}`)
@@ -220,7 +220,7 @@ describe("Git Search", () => {
     const git = prepareAndPushBaseExample();
     git
       .checkoutBranch("feature")
-      .amend("Halloween is soon")
+      .amendLatestCommitMessage("Halloween is soon")
       .pushAllWithForce();
 
     // When

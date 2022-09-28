@@ -78,7 +78,7 @@ export class GitBuilder {
     return this;
   }
 
-  amend(newMessage: string) {
+  amendLatestCommitMessage(newMessage: string) {
     cy.exec(`git -C ${this.gitDirectory} commit --amend -m "${newMessage}"`);
     return this;
   }

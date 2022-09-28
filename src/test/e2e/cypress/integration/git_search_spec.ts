@@ -146,4 +146,39 @@ describe("Git Search", () => {
     findSearchHits()
       .should('have.length', 2);
   });
+
+  it("should find commit for tag", () => {
+    // Given
+    const git = prepareAndPushBaseExample();
+    git
+      .checkoutBranch("feature")
+      .createAndCommitFile("Hello.txt", "Hello hello, turn the radio on", "Hello World")
+      .tag("illegal")
+      .pushTags();
+
+    // When
+    visitSearch("hello");
+
+    // Then
+    findSearchHit()
+      .should("exist");
+  });
+
+  it("should not find commit for tag after tag is deleted but commit wasn't pushed", () => {
+    // Given
+    const git = prepareAndPushBaseExample();
+    git
+      .checkoutBranch("feature")
+      .createAndCommitFile("Hello.txt", "Hello hello, turn the radio on", "Hello World")
+      .tag("illegal")
+      .pushTags()
+      .deleteTagLocallyAndRemote("illegal");
+
+    // When
+    visitSearch("hello");
+
+    // Then
+    findSearchHit()
+      .should("not.exist");
+  });
 });

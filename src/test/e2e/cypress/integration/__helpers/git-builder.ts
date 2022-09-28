@@ -42,8 +42,19 @@ export class GitBuilder {
     return this;
   }
 
+  deleteTagLocallyAndRemote(tagName: string) {
+    cy.exec(`git -C ${this.gitDirectory} tag -d "${tagName}"`);
+    cy.exec(`git -C ${this.gitDirectory} push -d origin "${tagName}"`);
+    return this;
+  }
+
   pushAll() {
     cy.exec(`git -C ${this.gitDirectory} push --all --force origin`);
+    return this;
+  }
+
+  pushTags() {
+    cy.exec(`git -C ${this.gitDirectory} push --tags --force origin`);
     return this;
   }
 
@@ -54,6 +65,11 @@ export class GitBuilder {
 
   rebaseOnto(branch: string) {
     cy.exec(`git -C ${this.gitDirectory} rebase ${branch}`);
+    return this;
+  }
+
+  tag(tagName: string) {
+    cy.exec(`git -C ${this.gitDirectory} tag ${tagName}`);
     return this;
   }
 }

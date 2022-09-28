@@ -25,11 +25,16 @@
 import {hri} from "human-readable-ids";
 import {GitBuilder} from "./__helpers/git-builder";
 
-// A---B---C---D  master
-//      \
-//       E        develop
-//        \
-//         F---G  feature
+const findSearchHit = (namespace: string, repoName: string) => cy
+  .contains("div.media-content", `${namespace}/${repoName}`);
+
+const findSearchMark = (namespace: string, repoName: string, keyword: string) => cy
+  .contains("div.media-content", `${namespace}/${repoName}`)
+  .contains("mark", keyword);
+
+const findRevision = (namespace: string, repoName: string) => cy
+  .contains("div.media-content", `${namespace}/${repoName}`)
+  .contains("a", /b[0-9a-f]{5,40}/);
 
 describe("Git Search", () => {
   let namespace: string;
@@ -41,6 +46,12 @@ describe("Git Search", () => {
     repoName = hri.random();
     cy.restCreateRepo("git", namespace, repoName);
     cy.login("scmadmin", "scmadmin");
+
+    // A---B---C---D  master
+    //      \
+    //       E        develop
+    //        \
+    //         F---G  feature
 
     builder = new GitBuilder(
       namespace,
@@ -67,9 +78,7 @@ describe("Git Search", () => {
     cy.visit(`/search/commit/?q=boulder`);
 
     // Then
-    cy
-      .contains("div.media-content", `${namespace}/${repoName}`)
-      .contains("mark", "Boulder")
+    findSearchMark(namespace, repoName, "Boulder")
       .should("exist");
   });
 
@@ -81,22 +90,25 @@ describe("Git Search", () => {
     cy.visit(`/search/commit/?q=fridolin`);
 
     // Then
-    cy
-      .contains("div.media-content", `${namespace}/${repoName}`)
+    findSearchHit(namespace, repoName)
       .should("not.exist");
   });
 
   it("should find rebased commits", () => {
+    let revision: string;
+
     // Given
+    cy.visit(`/search/commit/?q=fridolin`);
+    findRevision(namespace, repoName)
+      .then($revision => revision = $revision.text());
+
     builder.rebase("feature", "main");
 
     // When
     cy.visit(`/search/commit/?q=fridolin`);
 
     // Then
-    cy
-      .contains("div.media-content", `${namespace}/${repoName}`)
-      .contains("mark", "Fridolin")
-      .should("exist");
+    findRevision(namespace, repoName)
+      .then($revision => expect($revision.text()).to.eq(revision));
   });
 });

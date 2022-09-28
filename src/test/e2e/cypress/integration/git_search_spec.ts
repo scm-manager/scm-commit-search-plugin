@@ -34,12 +34,13 @@ const findSearchMark = (namespace: string, repoName: string, keyword: string) =>
 
 const findRevision = (namespace: string, repoName: string) => cy
   .contains("div.media-content", `${namespace}/${repoName}`)
-  .contains("a", /b[0-9a-f]{5,40}/);
+  .contains("a", /b[0-9a-f]{5,40}/)
+  .then($revision => $revision.text());
 
 describe("Git Search", () => {
   let namespace: string;
   let repoName: string;
-  let builder: GitBuilder;
+  let git: GitBuilder;
 
   beforeEach(() => {
     namespace = hri.random();
@@ -53,7 +54,7 @@ describe("Git Search", () => {
     //        \
     //         F---G  feature
 
-    builder = new GitBuilder(
+    git = new GitBuilder(
       namespace,
       repoName
     )
@@ -84,7 +85,7 @@ describe("Git Search", () => {
 
   it("should not find commits of deleted branch", () => {
     // Given
-    builder.deleteBranchLocallyAndRemote("feature");
+    git.deleteBranchLocallyAndRemote("feature");
 
     // When
     cy.visit(`/search/commit/?q=fridolin`);
@@ -100,15 +101,15 @@ describe("Git Search", () => {
     // Given
     cy.visit(`/search/commit/?q=fridolin`);
     findRevision(namespace, repoName)
-      .then($revision => revision = $revision.text());
+      .then($revision => revision = $revision);
 
-    builder.rebase("feature", "main");
+    git.rebase("feature", "main");
 
     // When
     cy.visit(`/search/commit/?q=fridolin`);
 
     // Then
     findRevision(namespace, repoName)
-      .then($revision => expect($revision.text()).to.eq(revision));
+      .then($revision => expect($revision).to.eq(revision));
   });
 });

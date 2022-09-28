@@ -3,14 +3,14 @@ export class GitBuilder {
   private readonly directory = `cypress/fixtures/${this.namespace}-${this.name}`;
   private readonly gitDirectory = `./${this.directory}`;
 
-  constructor(private readonly namespace: string, private readonly name: string) {
+  constructor(private readonly namespace: string, private readonly name: string, private readonly defaultBranch = "main") {
   }
 
   init() {
     const [protocol, url] = Cypress.config('baseUrl').split("//");
     const credentials = `${Cypress.env("USERNAME")}:${Cypress.env("PASSWORD")}`;
     const urlWithCredentials = `${protocol}//${credentials}@${url}`;
-    cy.exec(`git init -b main ./${this.gitDirectory}`);
+    cy.exec(`git init -b ${this.defaultBranch} ./${this.gitDirectory}`);
     cy.exec(`git -C ${this.gitDirectory} remote add origin "${urlWithCredentials}/repo/${this.namespace}/${this.name}"`);
     return this;
   }
@@ -33,7 +33,7 @@ export class GitBuilder {
   }
 
   checkoutDefaultBranch() {
-    return this.checkoutBranch("main");
+    return this.checkoutBranch(this.defaultBranch);
   }
 
   deleteBranchLocallyAndRemote(branchName: string) {

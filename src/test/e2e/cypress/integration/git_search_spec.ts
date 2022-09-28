@@ -181,4 +181,21 @@ describe("Git Search", () => {
     findSearchHit()
       .should("not.exist");
   });
+
+  it("should find commit for tag after deleting it again", () => {
+    // Given
+    const git = prepareAndPushBaseExample();
+    git
+      .checkoutBranch("feature")
+      .tag("hermit")
+      .pushTags()
+      .deleteTagLocallyAndRemote("hermit");
+
+    // When
+    visitSearch("grog");
+
+    // Then
+    findSearchHit()
+      .should("exist");
+  });
 });

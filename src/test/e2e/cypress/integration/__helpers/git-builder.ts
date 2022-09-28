@@ -48,7 +48,7 @@ export class GitBuilder {
     return this;
   }
 
-  pushAll() {
+  pushAllWithForce() {
     cy.exec(`git -C ${this.gitDirectory} push --all --force origin`);
     return this;
   }
@@ -75,6 +75,11 @@ export class GitBuilder {
 
   renameBranchLocallyAndRemote(oldBranchName: string, newBranchName: string) {
     cy.exec(`git -C ${this.gitDirectory} push origin :${oldBranchName} ${newBranchName}`);
+    return this;
+  }
+
+  amend(newMessage: string) {
+    cy.exec(`git -C ${this.gitDirectory} commit --amend -m "${newMessage}"`);
     return this;
   }
 }

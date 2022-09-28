@@ -75,7 +75,7 @@ describe("Git Search", () => {
     .createAndCheckoutBranch("feature")
     .createAndCommitFile("Fridolin.txt", "I like this name", "Fridolin likes the SCM-Manager, be more like Fridolin")
     .createAndCommitFile("Grog.txt", "Yaarrgh! I am a pirate", "Pirates drink Grog")
-    .pushAll()
+    .pushAllWithForce()
     .checkoutDefaultBranch();
 
   beforeEach(() => {
@@ -121,7 +121,7 @@ describe("Git Search", () => {
 
     git
       .rebase("feature", git.defaultBranch)
-      .pushAll();
+      .pushAllWithForce();
 
     // When
     visitSearch("fridolin");
@@ -137,7 +137,7 @@ describe("Git Search", () => {
     git
       .checkoutBranch("develop")
       .rebaseOnto(git.defaultBranch)
-      .pushAll();
+      .pushAllWithForce();
 
     // When
     visitSearch("elegant");
@@ -213,5 +213,28 @@ describe("Git Search", () => {
     // Then
     findSearchHit()
       .should("exist");
+  });
+
+  it("should find amended commit message", () => {
+    // Given
+    const git = prepareAndPushBaseExample();
+    git
+      .checkoutBranch("feature")
+      .amend("Halloween is soon")
+      .pushAllWithForce();
+
+    // When
+    visitSearch("halloween");
+
+    // Then
+    findSearchHit()
+      .should("exist");
+
+    // When
+    visitSearch("grog");
+
+    // Then
+    findSearchHit()
+      .should("not.exist");
   });
 });

@@ -50,7 +50,7 @@ const ChangesetHitRenderer: FC<extensionPoints.SearchHitRenderer["props"]> = ({ 
 
   return (
     <Hit>
-      <Container>
+      <Container className={`${repository.namespace}-${repository.name}`}>
         <div className="is-flex">
           <RepositoryAvatar repository={repository} size={48} />
           <div className="ml-2">

@@ -43,12 +43,17 @@ export class GitBuilder {
   }
 
   pushAll() {
-    cy.exec(`git -C ${this.gitDirectory} push --all origin`);
+    cy.exec(`git -C ${this.gitDirectory} push --all --force origin`);
     return this;
   }
 
   rebase(branch: string, onto: string) {
     cy.exec(`git -C ${this.gitDirectory} rebase ${branch} ${onto}`);
+    return this;
+  }
+
+  rebaseOnto(branch: string) {
+    cy.exec(`git -C ${this.gitDirectory} rebase ${branch}`);
     return this;
   }
 }

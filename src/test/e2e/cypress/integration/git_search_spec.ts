@@ -32,6 +32,9 @@ describe("Git Search", () => {
   const findSearchHit = () => cy
     .contains("div.media-content", `${namespace}/${repoName}`);
 
+  const findSearchHits = () => cy
+    .get(`.${namespace}-${repoName}`);
+
   const findSearchMark = (keyword: string) => cy
     .contains("div.media-content", `${namespace}/${repoName}`)
     .contains("mark", keyword);
@@ -107,7 +110,7 @@ describe("Git Search", () => {
       .should("not.exist");
   });
 
-  it("should find rebased commits", () => {
+  it("should find rebased commits under same revision", () => {
     let revision: string;
 
     // Given
@@ -116,7 +119,9 @@ describe("Git Search", () => {
     findRevision()
       .then($revision => revision = $revision);
 
-    git.rebase("feature", git.defaultBranch);
+    git
+      .rebase("feature", git.defaultBranch)
+      .pushAll();
 
     // When
     visitSearch("fridolin");
@@ -124,5 +129,21 @@ describe("Git Search", () => {
     // Then
     findRevision()
       .then($revision => expect($revision).to.eq(revision));
+  });
+
+  it("should find rebased commits twice", () => {
+    // Given
+    const git = prepareAndPushBaseExample();
+    git
+      .checkoutBranch("develop")
+      .rebaseOnto(git.defaultBranch)
+      .pushAll();
+
+    // When
+    visitSearch("elegant");
+
+    // Then
+    findSearchHits()
+      .should('have.length', 2);
   });
 });

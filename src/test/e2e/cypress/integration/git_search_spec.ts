@@ -22,76 +22,88 @@
  * SOFTWARE.
  */
 
-import {hri} from "human-readable-ids";
-import {GitBuilder} from "./__helpers/git-builder";
-
-const findSearchHit = (namespace: string, repoName: string) => cy
-  .contains("div.media-content", `${namespace}/${repoName}`);
-
-const findSearchMark = (namespace: string, repoName: string, keyword: string) => cy
-  .contains("div.media-content", `${namespace}/${repoName}`)
-  .contains("mark", keyword);
-
-const findRevision = (namespace: string, repoName: string) => cy
-  .contains("div.media-content", `${namespace}/${repoName}`)
-  .contains("a", /b[0-9a-f]{5,40}/)
-  .then($revision => $revision.text());
+import { hri } from "human-readable-ids";
+import { GitBuilder } from "./__helpers/git-builder";
 
 describe("Git Search", () => {
   let namespace: string;
   let repoName: string;
-  let git: GitBuilder;
+
+  const findSearchHit = () => cy
+    .contains("div.media-content", `${namespace}/${repoName}`);
+
+  const findSearchMark = (keyword: string) => cy
+    .contains("div.media-content", `${namespace}/${repoName}`)
+    .contains("mark", keyword);
+
+  const findRevision = () => cy
+    .contains("div.media-content", `${namespace}/${repoName}`)
+    .contains("a", /b[0-9a-f]{5,40}/)
+    .then($revision => $revision.text());
+
+  const visitSearch = (term: string) => cy.visit(`/search/commit/?q=${term}`)
+
+
+  /**
+   * Creates and pushes the following git tree:
+   *
+   *   A---B---C---D  master
+   *        \
+   *         E        develop
+   *          \
+   *           F---G  feature
+   *
+   * The files, file contents and commits all contain words starting with the given letter.
+   * A {@link GitBuilder} is returned to perform further git operations on the repository.
+   */
+  const prepareAndPushBaseExample = () => new GitBuilder(
+    namespace,
+    repoName
+  )
+    .init()
+    .createAndCommitFile("Antelope.txt", "I am an animal", "Release the Antelope")
+    .createAndCommitFile("Boulder.txt", "I am rock solid", "Lift a Boulder")
+    .createAndCheckoutBranch("develop")
+    .checkoutDefaultBranch()
+    .createAndCommitFile("Catfish.txt", "Am I a cat, am I a fish ? Who knows!", "Actually, a Catfish is a fish")
+    .createAndCommitFile("Dollar.txt", "Which dollar am I, Canadian, US, Australian ?", "A Dollar is what I need")
+    .checkoutBranch("develop")
+    .createAndCommitFile("Elegant.txt", "We even have adjectives!", "An elegant panda is counting to 42")
+    .createAndCheckoutBranch("feature")
+    .createAndCommitFile("Fridolin.txt", "I like this name", "Fridolin likes the SCM-Manager, be more like Fridolin")
+    .createAndCommitFile("Grog.txt", "Yaarrgh! I am a pirate", "Pirates drink Grog")
+    .pushAll()
+    .checkoutDefaultBranch();
 
   beforeEach(() => {
     namespace = hri.random();
     repoName = hri.random();
     cy.restCreateRepo("git", namespace, repoName);
     cy.login("scmadmin", "scmadmin");
-
-    // A---B---C---D  master
-    //      \
-    //       E        develop
-    //        \
-    //         F---G  feature
-
-    git = new GitBuilder(
-      namespace,
-      repoName
-    )
-      .init()
-      .createAndCommitFile("Antelope.txt", "I am an animal", "Release the Antelope")
-      .createAndCommitFile("Boulder.txt", "I am rock solid", "Lift a Boulder")
-      .createAndCheckoutBranch("develop")
-      .checkoutDefaultBranch()
-      .createAndCommitFile("Catfish.txt", "Am I a cat, am I a fish ? Who knows!", "Actually, a Catfish is a fish")
-      .createAndCommitFile("Dollar.txt", "Which dollar am I, Canadian, US, Australian ?", "A Dollar is what I need")
-      .checkoutBranch("develop")
-      .createAndCommitFile("Elegant.txt", "We even have adjectives!", "An elegant panda is counting to 42")
-      .createAndCheckoutBranch("feature")
-      .createAndCommitFile("Fridolin.txt", "I like this name", "Fridolin likes the SCM-Manager, be more like Fridolin")
-      .createAndCommitFile("Grog.txt", "Yaarrgh! I am a pirate", "Pirates drink Grog")
-      .pushAll()
-      .checkoutDefaultBranch();
   });
 
   it("should find commits", () => {
+    // Given
+    prepareAndPushBaseExample();
+
     // When
-    cy.visit(`/search/commit/?q=boulder`);
+    visitSearch("boulder");
 
     // Then
-    findSearchMark(namespace, repoName, "Boulder")
+    findSearchMark("Boulder")
       .should("exist");
   });
 
   it("should not find commits of deleted branch", () => {
     // Given
+    const git = prepareAndPushBaseExample();
     git.deleteBranchLocallyAndRemote("feature");
 
     // When
-    cy.visit(`/search/commit/?q=fridolin`);
+    visitSearch("fridolin");
 
     // Then
-    findSearchHit(namespace, repoName)
+    findSearchHit()
       .should("not.exist");
   });
 
@@ -99,17 +111,18 @@ describe("Git Search", () => {
     let revision: string;
 
     // Given
-    cy.visit(`/search/commit/?q=fridolin`);
-    findRevision(namespace, repoName)
+    const git = prepareAndPushBaseExample();
+    visitSearch("fridolin");
+    findRevision()
       .then($revision => revision = $revision);
 
-    git.rebase("feature", "main");
+    git.rebase("feature", git.defaultBranch);
 
     // When
-    cy.visit(`/search/commit/?q=fridolin`);
+    visitSearch("fridolin");
 
     // Then
-    findRevision(namespace, repoName)
+    findRevision()
       .then($revision => expect($revision).to.eq(revision));
   });
 });

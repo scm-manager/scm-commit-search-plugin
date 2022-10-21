@@ -29,23 +29,20 @@ describe("Git Search", () => {
   let namespace: string;
   let repoName: string;
 
-  const findSearchHit = () => cy
-    .contains("div.media-content", `${namespace}/${repoName}`);
+  const findSearchHit = () => cy.contains("div.media-content", `${namespace}/${repoName}`);
 
-  const findSearchHits = () => cy
-    .get(`.${namespace}\\/${repoName}`);
+  const findSearchHits = () => cy.get(`.${namespace}\\/${repoName}`);
 
-  const findSearchMark = (keyword: string) => cy
-    .contains("div.media-content", `${namespace}/${repoName}`)
-    .contains("mark", keyword);
+  const findSearchMark = (keyword: string) =>
+    cy.contains("div.media-content", `${namespace}/${repoName}`).contains("mark", keyword);
 
-  const findRevision = () => cy
-    .contains("div.media-content", `${namespace}/${repoName}`)
-    .contains("a", /b[0-9a-f]{5,40}/)
-    .then($revision => $revision.text());
+  const findRevision = () =>
+    cy
+      .contains("div.media-content", `${namespace}/${repoName}`)
+      .contains("a", /b[0-9a-f]{5,40}/)
+      .then($revision => $revision.text());
 
-  const visitSearch = (term: string) =>
-    cy.visit(`/search/commit/?q=${term}&namespace=${namespace}&name=${repoName}`)
+  const visitSearch = (term: string) => cy.visit(`/search/commit/?q=${term}&namespace=${namespace}&name=${repoName}`);
 
   /**
    * Creates and pushes the following git tree:
@@ -59,24 +56,22 @@ describe("Git Search", () => {
    * The files, file contents and commits all contain words starting with the given letter.
    * A {@link GitBuilder} is returned to perform further git operations on the repository.
    */
-  const prepareAndPushBaseExample = () => new GitBuilder(
-    namespace,
-    repoName
-  )
-    .init()
-    .createAndCommitFile("Antelope.txt", "I am an animal", "Release the Antelope")
-    .createAndCommitFile("Boulder.txt", "I am rock solid", "Lift a Boulder")
-    .createAndCheckoutBranch("develop")
-    .checkoutDefaultBranch()
-    .createAndCommitFile("Catfish.txt", "Am I a cat, am I a fish ? Who knows!", "Actually, a Catfish is a fish")
-    .createAndCommitFile("Dollar.txt", "Which dollar am I, Canadian, US, Australian ?", "A Dollar is what I need")
-    .checkoutBranch("develop")
-    .createAndCommitFile("Elegant.txt", "We even have adjectives!", "An elegant panda is counting to 42")
-    .createAndCheckoutBranch("feature")
-    .createAndCommitFile("Fridolin.txt", "I like this name", "Fridolin likes the SCM-Manager, be more like Fridolin")
-    .createAndCommitFile("Grog.txt", "Yaarrgh! I am a pirate", "Pirates drink Grog")
-    .pushAllWithForce()
-    .checkoutDefaultBranch();
+  const prepareAndPushBaseExample = () =>
+    new GitBuilder(namespace, repoName)
+      .init()
+      .createAndCommitFile("Antelope.txt", "I am an animal", "Release the Antelope")
+      .createAndCommitFile("Boulder.txt", "I am rock solid", "Lift a Boulder")
+      .createAndCheckoutBranch("develop")
+      .checkoutDefaultBranch()
+      .createAndCommitFile("Catfish.txt", "Am I a cat, am I a fish ? Who knows!", "Actually, a Catfish is a fish")
+      .createAndCommitFile("Dollar.txt", "Which dollar am I, Canadian, US, Australian ?", "A Dollar is what I need")
+      .checkoutBranch("develop")
+      .createAndCommitFile("Elegant.txt", "We even have adjectives!", "An elegant panda is counting to 42")
+      .createAndCheckoutBranch("feature")
+      .createAndCommitFile("Fridolin.txt", "I like this name", "Fridolin likes the SCM-Manager, be more like Fridolin")
+      .createAndCommitFile("Grog.txt", "Yaarrgh! I am a pirate", "Pirates drink Grog")
+      .pushAllWithForce()
+      .checkoutDefaultBranch();
 
   beforeEach(() => {
     namespace = hri.random();
@@ -93,8 +88,7 @@ describe("Git Search", () => {
     visitSearch("boulder");
 
     // Then
-    findSearchMark("Boulder")
-      .should("exist");
+    findSearchMark("Boulder").should("exist");
   });
 
   it("should not find commits of deleted branch", () => {
@@ -106,8 +100,7 @@ describe("Git Search", () => {
     visitSearch("fridolin");
 
     // Then
-    findSearchHit()
-      .should("not.exist");
+    findSearchHit().should("not.exist");
   });
 
   it("should find rebased commits under same revision", () => {
@@ -116,19 +109,15 @@ describe("Git Search", () => {
     // Given
     const git = prepareAndPushBaseExample();
     visitSearch("fridolin");
-    findRevision()
-      .then($revision => revision = $revision);
+    findRevision().then($revision => (revision = $revision));
 
-    git
-      .rebase("feature", git.defaultBranch)
-      .pushAllWithForce();
+    git.rebase("feature", git.defaultBranch).pushAllWithForce();
 
     // When
     visitSearch("fridolin");
 
     // Then
-    findRevision()
-      .then($revision => expect($revision).to.eq(revision));
+    findRevision().then($revision => expect($revision).to.eq(revision));
   });
 
   it("should find rebased commits twice", () => {
@@ -143,8 +132,7 @@ describe("Git Search", () => {
     visitSearch("elegant");
 
     // Then
-    findSearchHits()
-      .should('have.length', 2);
+    findSearchHits().should("have.length", 2);
   });
 
   it("should find commit for tag", () => {
@@ -160,8 +148,7 @@ describe("Git Search", () => {
     visitSearch("hello");
 
     // Then
-    findSearchHit()
-      .should("exist");
+    findSearchHit().should("exist");
   });
 
   it("should not find commit for tag after tag is deleted but commit wasn't pushed", () => {
@@ -178,8 +165,7 @@ describe("Git Search", () => {
     visitSearch("hello");
 
     // Then
-    findSearchHit()
-      .should("not.exist");
+    findSearchHit().should("not.exist");
   });
 
   it("should find commit for tag after deleting it again", () => {
@@ -195,8 +181,7 @@ describe("Git Search", () => {
     visitSearch("grog");
 
     // Then
-    findSearchHit()
-      .should("exist");
+    findSearchHit().should("exist");
   });
 
   it("should find commit after renaming branch", () => {
@@ -211,8 +196,7 @@ describe("Git Search", () => {
     visitSearch("fridolin");
 
     // Then
-    findSearchHit()
-      .should("exist");
+    findSearchHit().should("exist");
   });
 
   it("should find amended commit message", () => {
@@ -227,14 +211,12 @@ describe("Git Search", () => {
     visitSearch("halloween");
 
     // Then
-    findSearchHit()
-      .should("exist");
+    findSearchHit().should("exist");
 
     // When
     visitSearch("grog");
 
     // Then
-    findSearchHit()
-      .should("not.exist");
+    findSearchHit().should("not.exist");
   });
 });

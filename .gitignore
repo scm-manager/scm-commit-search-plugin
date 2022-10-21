@@ -306,3 +306,6 @@ gradle-app.setting
 
 *.iml
 .idea
+
+# Generated Cypress Fixtures
+**/cypress/fixtures/generated/

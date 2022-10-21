@@ -44,13 +44,8 @@ describe("Git Search", () => {
     .contains("a", /b[0-9a-f]{5,40}/)
     .then($revision => $revision.text());
 
-  const visitSearch = (term: string) => {
-    const requestAlias = `searchApiRequest-${term}`;
-    cy.intercept('GET', `/scm/api/v2/search/query/commit?q=${term}*`).as(requestAlias);
-    cy.visit(`/search/commit/?q=${term}`);
-    cy.wait(`@${requestAlias}`);
-  }
-
+  const visitSearch = (term: string) =>
+    cy.visit(`/search/commit/?q=${term}&namespace=${namespace}&name=${repoName}`)
 
   /**
    * Creates and pushes the following git tree:

@@ -1,6 +1,6 @@
 export class GitBuilder {
 
-  private readonly directory = `cypress/fixtures/${this.namespace}-${this.name}`;
+  private readonly directory = `cypress/fixtures/generated/${this.namespace}-${this.name}`;
   private readonly gitDirectory = `./${this.directory}`;
 
   constructor(private readonly namespace: string, private readonly name: string, readonly defaultBranch = "main") {

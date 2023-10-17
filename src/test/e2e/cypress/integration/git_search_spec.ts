@@ -29,16 +29,14 @@ describe("Git Search", () => {
   let namespace: string;
   let repoName: string;
 
-  const findSearchHit = () => cy.contains("div.media-content", `${namespace}/${repoName}`);
+  const findSearchHit = () => cy.contains("li", `${namespace}/${repoName}`);
 
   const findSearchHits = () => cy.get(`.${namespace}\\/${repoName}`);
 
-  const findSearchMark = (keyword: string) =>
-    cy.contains("div.media-content", `${namespace}/${repoName}`).contains("mark", keyword);
+  const findSearchMark = (keyword: string) => findSearchHit().contains("mark", keyword);
 
   const findRevision = () =>
-    cy
-      .contains("div.media-content", `${namespace}/${repoName}`)
+    findSearchHit()
       .contains("a", /b[0-9a-f]{5,40}/)
       .then($revision => $revision.text());
 
@@ -77,7 +75,7 @@ describe("Git Search", () => {
     namespace = hri.random();
     repoName = hri.random();
     cy.restCreateRepo("git", namespace, repoName);
-    cy.login("scmadmin", "scmadmin");
+    cy.restLogin("scmadmin", "scmadmin");
   });
 
   it("should find commits", () => {

@@ -51,39 +51,39 @@ const ChangesetHitRenderer: FC<extensionPoints.SearchHitRenderer["props"]> = ({ 
   }
 
   return (
-      <CardList.Card key={title} className={`${repository.namespace}/${repository.name}`}>
-        <CardList.Card.Row>
-          <CardList.Card.Title>
-            <StyledLink
-              to={`/repo/${repository.namespace}/${repository.name}`}
-              className={classNames("is-flex", "is-justify-content-flex-start", "is-align-items-center")}
-            >
-              <RepositoryAvatar repository={repository} size={16} /> {title}
-            </StyledLink>
-          </CardList.Card.Title>
-        </CardList.Card.Row>
-        <CardList.Card.Row>
-          <FileContent className="my-2">
-            <pre>
-              <code>
-                <TextHitField hit={hit} field="description" truncateValueAt={1024} />
-              </code>
-            </pre>
-          </FileContent>
-        </CardList.Card.Row>
-        <CardList.Card.Row className="is-size-7 has-text-secondary">
-          <Trans i18nKey={"scm-commit-search-plugin.commit-details"}>
-            Revision{" "}
-            <Link
-              className="is-ellipsis-overflow is-relative"
-              to={`/repo/${repository.namespace}/${repository.name}/code/changeset/${commitId}`}
-            >
-              <TextHitField hit={hit} field="id" />
-            </Link>{" "}
-            by <TextHitField hit={hit} field="author" />
-          </Trans>
-        </CardList.Card.Row>
-      </CardList.Card>
+    <CardList.Card key={title} className={`${repository.namespace}/${repository.name}`}>
+      <CardList.Card.Row>
+        <CardList.Card.Title>
+          <StyledLink
+            to={`/repo/${repository.namespace}/${repository.name}`}
+            className={classNames("is-flex", "is-justify-content-flex-start", "is-align-items-center")}
+          >
+            <RepositoryAvatar repository={repository} size={16} /> {title}
+          </StyledLink>
+        </CardList.Card.Title>
+      </CardList.Card.Row>
+      <CardList.Card.Row>
+        <FileContent className="my-2">
+          <pre className="is-relative">
+            <code>
+              <TextHitField hit={hit} field="description" truncateValueAt={1024} />
+            </code>
+          </pre>
+        </FileContent>
+      </CardList.Card.Row>
+      <CardList.Card.Row className="is-size-7 has-text-secondary">
+        <Trans i18nKey={"scm-commit-search-plugin.commit-details"}>
+          Revision{" "}
+          <Link
+            className="is-ellipsis-overflow is-relative"
+            to={`/repo/${repository.namespace}/${repository.name}/code/changeset/${commitId}`}
+          >
+            <TextHitField hit={hit} field="id" />
+          </Link>{" "}
+          by <TextHitField hit={hit} field="author" />
+        </Trans>
+      </CardList.Card.Row>
+    </CardList.Card>
   );
 };
 

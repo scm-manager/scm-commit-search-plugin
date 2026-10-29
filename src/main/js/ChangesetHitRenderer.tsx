@@ -20,7 +20,7 @@ import styled from "styled-components";
 import { Link } from "react-router-dom";
 import { Trans } from "react-i18next";
 import { extensionPoints } from "@scm-manager/ui-extensions";
-import { CardList } from "@scm-manager/ui-layout";
+import { CardList } from "@scm-manager/ui-core";
 import classNames from "classnames";
 
 const StyledLink = styled(Link)`
